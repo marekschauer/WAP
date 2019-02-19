@@ -14,6 +14,18 @@ function createElementWAttr(element, attributes) {
 	return newElement;
 }
 
+function strSearchHandler(e, dataToBeFIltered) {
+	console.log('************************');
+	console.log(e.srcElement.value);
+	console.log(dataToBeFIltered);
+}
+
+function selectSearchHandler(e, dataToBeFIltered) {
+	for (var i = this.selectedOptions.length - 1; i >= 0; i--) {
+		console.log(this.selectedOptions[i].value);
+	}
+}
+
 /**
  * Initializes filter of items
  *
@@ -24,36 +36,85 @@ function initFilter(paramsObj) {
 	selected = document.getElementById(paramsObj.id).getElementsByClassName('item');
 	filterable_content = document.getElementById(paramsObj.id);
 
-	for (var i = paramsObj.filterable.length - 1; i >= 0 ; i--) {
-		currentFilter = paramsObj.filterable[i];
+	let filtered = [];
+	for (var i = 0; i < selected.length; i++) {
+		filtered.push({
+			'node': selected[i],
+			'visible': true
+		});
+	}
+	console.log(filtered);
 
-		if (currentFilter.type === 'str') {
-			tmpEl = createElementWAttr('input', {
-						'type': 'text'
-					});
-		} else if (currentFilter.type === 'num') {
-			tmpEl = createElementWAttr('input', {
-						'type': 'number'
-					});
-		} else if (currentFilter.type === 'enumeration') {
-			tmpEl = createElementWAttr('select', {'multiple': 'true'});
+	if (paramsObj.filterable.length > 0) {
+		form = createElementWAttr('form', {});
+		for (var i = paramsObj.filterable.length - 1; i >= 0 ; i--) {
+			currentFilter = paramsObj.filterable[i];
 
-			selected = filterable_content.getElementsByClassName('item')/*.getElementsByClassName(currentFilter.name)*/;
-			selected = document.querySelectorAll("#" + paramsObj.id + " .item ." + currentFilter.name);
-			uniqueOptions = [];
-			selected.forEach(function(currentValue, currentIndex, listObj) {
-				if (!uniqueOptions.includes(currentValue.innerHTML)) {
-					tmpOption = createElementWAttr('option', {
-						'value': selected[currentIndex].innerHTML
-					});
-					tmpOption.innerHTML = currentValue.innerHTML;
-					tmpEl.append(tmpOption);
-					uniqueOptions.push(currentValue.innerHTML);
-				}
+			tmpElements = [];
+
+			if (currentFilter.type === 'str') {
+				tmpElements.push({
+					'element': createElementWAttr('input', {
+															'type': 'text',
+															'id': paramsObj.id + '_' + currentFilter.name
+														}),
+					'callback': strSearchHandler,
+					'dataToBeFiltered': filtered
 			});
-			console.log(selected);
+				
+						// .addEventListener('input', typeHandler) // register for oninput
+			} else if (currentFilter.type === 'num') {
+				tmpElements.push({'element': createElementWAttr('input', {
+											'type': 'number',
+											'id': paramsObj.id + '_' + currentFilter.name + '_from'
+										}),
+									'callback': strSearchHandler,
+									'dataToBeFiltered': filtered
+
+			});
+				tmpElements.push({'element': createElementWAttr('input', {
+											'type': 'number',
+											'id': paramsObj.id + '_' + currentFilter.name + '_to'
+										}),
+									'callback': strSearchHandler,
+									'dataToBeFiltered': filtered
+
+			});
+			} else if (currentFilter.type === 'enumeration') {
+				tmpEl = createElementWAttr('select', {
+					'multiple': 'true',
+					'name': paramsObj.id + '_' + currentFilter.name + '[]',
+					'id': paramsObj.id + '_' + currentFilter.name
+				});
+
+				selected = document.querySelectorAll("#" + paramsObj.id + " .item ." + currentFilter.name);
+				uniqueOptions = [];
+				selected.forEach(function(currentValue, currentIndex, listObj) {
+					if (!uniqueOptions.includes(currentValue.innerHTML)) {
+						tmpOption = createElementWAttr('option', {
+							'value': selected[currentIndex].innerHTML
+						});
+						tmpOption.innerHTML = currentValue.innerHTML;
+						tmpEl.append(tmpOption);
+						uniqueOptions.push(currentValue.innerHTML);
+					}
+				});
+				tmpElements.push({'element': tmpEl, 'callback': selectSearchHandler});
+			}
+			
+			tmpElements.forEach(function(elem) {
+				filterable_content.prepend(elem.element);
+				
+				// console.log('------------------------------');
+				document.getElementById(elem.element.id).addEventListener('input', (function(elem) {
+					return function(e) {elem.callback(e, elem.dataToBeFiltered);}
+				}) (elem));
+
+
+
+				// document.getElementById(elem.element.id).addEventListener('input', elem.callback);
+			});
 		}
-		filterable_content.prepend(tmpEl);
 	}
 }
 
@@ -62,7 +123,7 @@ initFilter({
 	'filterable': [
 		{
 			'name': 'title',
-			'type': 'str'
+			'type': 'str',
 		},
 		{
 			'name': 'price',
@@ -82,3 +143,29 @@ initFilter({
 		},
 	]
 });
+
+// initFilter({
+// 	'id': 'wap_filterable2',
+// 	'filterable': [
+// 		{
+// 			'name': 'title',
+// 			'type': 'str',
+// 		},
+// 		{
+// 			'name': 'price',
+// 			'type': 'num'
+// 		},
+// 		{
+// 			'name': 'author',
+// 			'type': 'str'
+// 		},
+// 		{
+// 			'name': 'quantity',
+// 			'type': 'num'
+// 		},
+// 		{
+// 			'name': 'publisher',
+// 			'type': 'enumeration'
+// 		},
+// 	]
+// });
