@@ -16,8 +16,24 @@ function createElementWAttr(element, attributes) {
 
 function strSearchHandler(e, dataToBeFIltered) {
 	console.log('************************');
-	console.log(e.srcElement.value);
-	console.log(dataToBeFIltered);
+	// console.log(e.srcElement.value);
+	// console.log(e.srcElement.getAttribute('data-property-name'));
+
+	let typed = e.srcElement.value;
+
+	dataToBeFIltered.forEach(function(item) {
+
+		toBeFiltered = item.node.querySelector('.' + e.srcElement.getAttribute('data-property-name'));
+
+		if (toBeFiltered.innerHTML.toUpperCase().includes(typed.toUpperCase())) {
+			item.node.style.display = 'initial';
+			item.visible = false;
+		} else {
+			item.node.style.display = 'none';
+			item.visible = false;
+		}
+
+	});
 }
 
 function selectSearchHandler(e, dataToBeFIltered) {
@@ -56,7 +72,8 @@ function initFilter(paramsObj) {
 				tmpElements.push({
 					'element': createElementWAttr('input', {
 															'type': 'text',
-															'id': paramsObj.id + '_' + currentFilter.name
+															'id': paramsObj.id + '_' + currentFilter.name,
+															'data-property-name': currentFilter.name
 														}),
 					'callback': strSearchHandler,
 					'dataToBeFiltered': filtered
@@ -66,7 +83,8 @@ function initFilter(paramsObj) {
 			} else if (currentFilter.type === 'num') {
 				tmpElements.push({'element': createElementWAttr('input', {
 											'type': 'number',
-											'id': paramsObj.id + '_' + currentFilter.name + '_from'
+											'id': paramsObj.id + '_' + currentFilter.name + '_from',
+											'data-property-name': currentFilter.name
 										}),
 									'callback': strSearchHandler,
 									'dataToBeFiltered': filtered
@@ -74,7 +92,8 @@ function initFilter(paramsObj) {
 			});
 				tmpElements.push({'element': createElementWAttr('input', {
 											'type': 'number',
-											'id': paramsObj.id + '_' + currentFilter.name + '_to'
+											'id': paramsObj.id + '_' + currentFilter.name + '_to',
+											'data-property-name': currentFilter.name
 										}),
 									'callback': strSearchHandler,
 									'dataToBeFiltered': filtered
@@ -84,7 +103,8 @@ function initFilter(paramsObj) {
 				tmpEl = createElementWAttr('select', {
 					'multiple': 'true',
 					'name': paramsObj.id + '_' + currentFilter.name + '[]',
-					'id': paramsObj.id + '_' + currentFilter.name
+					'id': paramsObj.id + '_' + currentFilter.name,
+					'data-property-name': currentFilter.name
 				});
 
 				selected = document.querySelectorAll("#" + paramsObj.id + " .item ." + currentFilter.name);
