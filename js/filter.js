@@ -14,29 +14,70 @@ function createElementWAttr(element, attributes) {
 	return newElement;
 }
 
-function strSearchHandler(e, dataToBeFIltered) {
-	console.log('************************');
+function globalSearchHandler(e, dataToBeFiltered, inputs) {
+	// console.log('************************');
+	// console.log(e);
+	// console.log(dataToBeFiltered);
+	// console.log(inputs);
+
+	tmpDataToBeFiltered = dataToBeFiltered;
+
+	// Setting all items visible before we start to hide them
+	tmpDataToBeFiltered.forEach(function(item) {
+		item.visible = true;
+		item.node.style.display = 'initial';
+	});
+
+
+	inputs.forEach(function(item) {
+		// console.log('---------------I iterate---------------');
+		if (item.tagName == 'INPUT') {
+			if (item.getAttribute('type') == 'text') {
+				tmpDataToBeFiltered = strSearchHandler(e, tmpDataToBeFiltered, item);
+			} else if (item.getAttribute('type') == 'number' && item.getAttribute('data-from-value') === 'true') {
+				// tmpDataToBeFiltered = numberSearchHandler(e, tmpDataToBeFiltered, item);
+			}
+		} else if (item.tagName == 'SELECT') {
+			// call selectSearchHandler
+		}
+		// console.log('===');
+		// console.log(item);
+		// console.log('===');
+	});
+
+}
+
+function strSearchHandler(e, dataToBeFiltered, input) {
+	// console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
 	// console.log(e.srcElement.value);
 	// console.log(e.srcElement.getAttribute('data-property-name'));
 
-	let typed = e.srcElement.value;
+	typed = input.value;
+	if (typed !== '') {
+		dataToBeFiltered.forEach(function(item) {
 
-	dataToBeFIltered.forEach(function(item) {
+			toBeFiltered = item.node.querySelector('.' + input.getAttribute('data-property-name'));
+			
+			if (toBeFiltered.innerHTML.toUpperCase().includes(typed.toUpperCase()) && item.visible) {
+				item.node.style.display = 'initial';
+				item.visible = true;
+			} else {
+				item.node.style.display = 'none';
+				item.visible = false;
+			}
 
-		toBeFiltered = item.node.querySelector('.' + e.srcElement.getAttribute('data-property-name'));
+		});
+	}
 
-		if (toBeFiltered.innerHTML.toUpperCase().includes(typed.toUpperCase())) {
-			item.node.style.display = 'initial';
-			item.visible = false;
-		} else {
-			item.node.style.display = 'none';
-			item.visible = false;
-		}
+	// console.log(dataToBeFiltered);
+	// console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
 
-	});
+	return dataToBeFiltered;
 }
 
-function selectSearchHandler(e, dataToBeFIltered) {
+
+
+function selectSearchHandler(e, dataToBeFiltered) {
 	for (var i = this.selectedOptions.length - 1; i >= 0; i--) {
 		console.log(this.selectedOptions[i].value);
 	}
@@ -63,6 +104,7 @@ function initFilter(paramsObj) {
 
 	if (paramsObj.filterable.length > 0) {
 		form = createElementWAttr('form', {});
+		inputs = [];
 		for (var i = paramsObj.filterable.length - 1; i >= 0 ; i--) {
 			currentFilter = paramsObj.filterable[i];
 
@@ -83,7 +125,7 @@ function initFilter(paramsObj) {
 			} else if (currentFilter.type === 'num') {
 				tmpElements.push({'element': createElementWAttr('input', {
 											'type': 'number',
-											'id': paramsObj.id + '_' + currentFilter.name + '_from',
+											'id': paramsObj.id + '_' + currentFilter.name + '_to',
 											'data-property-name': currentFilter.name
 										}),
 									'callback': strSearchHandler,
@@ -92,8 +134,9 @@ function initFilter(paramsObj) {
 			});
 				tmpElements.push({'element': createElementWAttr('input', {
 											'type': 'number',
-											'id': paramsObj.id + '_' + currentFilter.name + '_to',
-											'data-property-name': currentFilter.name
+											'id': paramsObj.id + '_' + currentFilter.name + '_from',
+											'data-property-name': currentFilter.name,
+											'data-from-value': 'true',
 										}),
 									'callback': strSearchHandler,
 									'dataToBeFiltered': filtered
@@ -124,15 +167,11 @@ function initFilter(paramsObj) {
 			
 			tmpElements.forEach(function(elem) {
 				filterable_content.prepend(elem.element);
+				inputs.push(elem.element);
 				
-				// console.log('------------------------------');
 				document.getElementById(elem.element.id).addEventListener('input', (function(elem) {
-					return function(e) {elem.callback(e, elem.dataToBeFiltered);}
+					return function(e) {globalSearchHandler(e, elem.dataToBeFiltered, inputs);}
 				}) (elem));
-
-
-
-				// document.getElementById(elem.element.id).addEventListener('input', elem.callback);
 			});
 		}
 	}
@@ -159,33 +198,7 @@ initFilter({
 		},
 		{
 			'name': 'publisher',
-			'type': 'enumeration'
+			'type': 'str'
 		},
 	]
 });
-
-// initFilter({
-// 	'id': 'wap_filterable2',
-// 	'filterable': [
-// 		{
-// 			'name': 'title',
-// 			'type': 'str',
-// 		},
-// 		{
-// 			'name': 'price',
-// 			'type': 'num'
-// 		},
-// 		{
-// 			'name': 'author',
-// 			'type': 'str'
-// 		},
-// 		{
-// 			'name': 'quantity',
-// 			'type': 'num'
-// 		},
-// 		{
-// 			'name': 'publisher',
-// 			'type': 'enumeration'
-// 		},
-// 	]
-// });
