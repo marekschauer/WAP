@@ -1,3 +1,15 @@
+/*
+****************************************
+****************************************
+ * WAP Project - Výběr zboží
+ * Javascript filter of items
+ * 
+ * Author: Marek Schauer
+ * Academic year: 2018/2019
+****************************************
+****************************************
+ */
+
 /**
  * Creates an element with attribute.
  *
