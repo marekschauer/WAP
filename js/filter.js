@@ -32,14 +32,8 @@ function getSelectedOptionsValues(select) {
 }
 
 function globalSearchHandler(e, dataToBeFiltered, inputs) {
-	// console.log('************************');
-	// console.log(e);
-	// console.log(dataToBeFiltered);
-	// console.log(inputs);
-
 	tmpDataToBeFiltered = dataToBeFiltered;
 
-	// console.log(dataToBeFiltered);
 	console.log('~~~~~~~~~~~~');
 	// Setting all items visible before we start to hide them
 	tmpDataToBeFiltered.forEach(function(item) {
@@ -47,9 +41,11 @@ function globalSearchHandler(e, dataToBeFiltered, inputs) {
 		item.node.style.display = 'initial';
 	});
 
+	scope = e.srcElement.getAttribute('data-filter-id');
+	inputs = document.querySelectorAll('[data-filter-id="' + scope + '"]');
+
 
 	inputs.forEach(function(item) {
-		// console.log('---------------I iterate---------------');
 		if (item.tagName == 'INPUT') {
 			if (item.getAttribute('type') == 'text') {
 				tmpDataToBeFiltered = strSearchHandler(e, tmpDataToBeFiltered, item);
@@ -296,33 +292,33 @@ initFilter({
 });
 
 
-// initFilter({
-// 	'id': 'wap_filterable2',
-// 	'filterable': [
-// 		{
-// 			'name': 'title',
-// 			'type': 'str',
-// 			'form_placeholder': 'Nadpis'
-// 		},
-// 		{
-// 			'name': 'price',
-// 			'type': 'num',
-// 			'form_placeholder': ['Cena od', 'Cena do']
-// 		},
-// 		{
-// 			'name': 'author',
-// 			'type': 'str',
-// 			'form_placeholder': 'Autor',
-// 		},
-// 		{
-// 			'name': 'quantity',
-// 			'type': 'num',
-// 			'form_placeholder': ['Počet od', 'Počet do']
-// 		},
-// 		{
-// 			'name': 'publisher',
-// 			'type': 'enumeration',
-// 			'form_placeholder': 'Vydavateľstvo'
-// 		},
-// 	]
-// });
+initFilter({
+	'id': 'wap_filterable2',
+	'filterable': [
+		{
+			'name': 'title',
+			'type': 'str',
+			'form_placeholder': 'Nadpis'
+		},
+		{
+			'name': 'price',
+			'type': 'num',
+			'form_placeholder': ['Cena od', 'Cena do']
+		},
+		{
+			'name': 'author',
+			'type': 'str',
+			'form_placeholder': 'Autor',
+		},
+		{
+			'name': 'quantity',
+			'type': 'num',
+			'form_placeholder': ['Počet od', 'Počet do']
+		},
+		{
+			'name': 'publisher',
+			'type': 'enumeration',
+			'form_placeholder': 'Vydavateľstvo'
+		},
+	]
+});
