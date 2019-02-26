@@ -31,14 +31,20 @@ function getSelectedOptionsValues(select) {
 	return toBeReturned;
 }
 
-function globalSearchHandler(e, dataToBeFiltered, inputs) {
+/**
+ * Search handler for all types of inputs, calls particular
+ * handlers depending on inputs that occur in filter
+ *
+ * @param      InputEvent  	e                 Event of input which fired an event
+ * @param      Array  		dataToBeFiltered  The data to be filtered
+ */
+function globalSearchHandler(e, dataToBeFiltered) {
 	tmpDataToBeFiltered = dataToBeFiltered;
 
-	console.log('~~~~~~~~~~~~');
 	// Setting all items visible before we start to hide them
 	tmpDataToBeFiltered.forEach(function(item) {
 		item.visible = true;
-		item.node.style.display = 'initial';
+		item.node.style.removeProperty('display');
 	});
 
 	scope = e.srcElement.getAttribute('data-filter-id');
@@ -60,24 +66,24 @@ function globalSearchHandler(e, dataToBeFiltered, inputs) {
 
 }
 
+/**
+ * Search handler for strings
+ *
+ * @param      InputEvent  	e                 Event of input which fired an event
+ * @param      Array  		dataToBeFiltered  The data to be filtered
+ * @param      Object 		input             The input that holds the value we search for
+ * @return     Array 		Array of data filtered by string contained in input
+ */
 function strSearchHandler(e, dataToBeFiltered, input) {
-	// console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
-	// console.log(e.srcElement.value);
-	// console.log(e.srcElement.getAttribute('data-property-name'));
-
 	typed = input.value;
-	console.log(typed);
-	console.log(typed);
-	console.log(dataToBeFiltered);
-	console.log(typed);
-	console.log(typed);
+
 	if (typed !== '') {
 		dataToBeFiltered.forEach(function(item) {
 
 			toBeFiltered = item.node.querySelector('.' + input.getAttribute('data-property-name'));
 			
 			if (toBeFiltered.innerHTML.toUpperCase().includes(typed.toUpperCase()) && item.visible) {
-				item.node.style.display = 'initial';
+				item.node.style.removeProperty('display');
 				item.visible = true;
 			} else {
 				item.node.style.display = 'none';
@@ -87,13 +93,17 @@ function strSearchHandler(e, dataToBeFiltered, input) {
 		});
 	}
 
-	// console.log(dataToBeFiltered);
-	// console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
-	console.log(dataToBeFiltered);
-
 	return dataToBeFiltered;
 }
 
+/**
+ * Search handler for strings
+ *
+ * @param      InputEvent  	e                 Event of input which fired an event
+ * @param      Array  		dataToBeFiltered  The data to be filtered
+ * @param      Object 		input             The input that holds the 'from' value we search for
+ * @return     Array 		Array of data filtered by numerical interval given by input
+ */
 function numberSearchHandler(e, dataToBeFiltered, input) {
 	interval = {
 		'from': Number.MIN_SAFE_INTEGER,
@@ -111,7 +121,7 @@ function numberSearchHandler(e, dataToBeFiltered, input) {
 		toBeFiltered = item.node.querySelector('.' + input.getAttribute('data-property-name'));
 		
 		if (item.visible && parseInt(toBeFiltered.innerHTML, 10) >= parseInt(interval.from, 10) && parseInt(toBeFiltered.innerHTML, 10) <= parseInt(interval.to, 10)) {
-			item.node.style.display = 'initial';
+			item.node.style.removeProperty('display');
 			item.visible = true;
 		} else {
 			item.node.style.display = 'none';
@@ -124,19 +134,22 @@ function numberSearchHandler(e, dataToBeFiltered, input) {
 }
 
 
-
+/**
+ * Search handler for enumeration
+ *
+ * @param      InputEvent  	e                 Event of select which fired an event
+ * @param      Array  		dataToBeFiltered  The data to be filtered
+ * @param      Object 		select            The select that holds the selected options
+ * @return     Array 		Array of data filtered by selected options
+ */
 function selectSearchHandler(e, dataToBeFiltered, select) {
 	selectedOptions = getSelectedOptionsValues(select);
-	// console.log(selectedOptions);
-	// selectedOptions.forEach(function(item) {
-	// 	console.log(item.value);
-	// });
 
 	if (selectedOptions.length != 0) {
 		dataToBeFiltered.forEach(function(item) {
 			toBeFiltered = item.node.querySelector('.' + select.getAttribute('data-property-name'));
 			if (item.visible && selectedOptions.includes(toBeFiltered.innerHTML)) {
-				item.node.style.display = 'initial';
+				item.node.style.removeProperty('display');
 				item.visible = true;
 			} else {
 				item.node.style.display = 'none';
@@ -149,7 +162,7 @@ function selectSearchHandler(e, dataToBeFiltered, select) {
 }
 
 /**
- * Initializes filter of items
+ * Initializes filter of items and creates inputs
  *
  * @param      object  paramsObj	The object that holds parameters
  * 									                     
@@ -166,13 +179,7 @@ function initFilter(paramsObj) {
 		});
 	}
 
-	console.log('-------');
-	console.log(filtered);
-	console.log('-------');
-
 	if (paramsObj.filterable.length > 0) {
-		form = createElementWAttr('form', {});
-		inputs = [];
 		for (var i = paramsObj.filterable.length - 1; i >= 0 ; i--) {
 			currentFilter = paramsObj.filterable[i];
 
@@ -187,11 +194,9 @@ function initFilter(paramsObj) {
 															'data-filter-id': paramsObj.id,
 															'placeholder': currentFilter.form_placeholder
 														}),
-					// 'callback': strSearchHandler,
 					'dataToBeFiltered': filtered
 			});
 				
-						// .addEventListener('input', typeHandler) // register for oninput
 			} else if (currentFilter.type === 'num') {
 				tmpElements.push({'element': createElementWAttr('input', {
 											'type': 'number',
@@ -200,7 +205,6 @@ function initFilter(paramsObj) {
 											'data-filter-id': paramsObj.id,
 											'placeholder': currentFilter.form_placeholder[1]
 										}),
-									// 'callback': strSearchHandler,
 									'dataToBeFiltered': filtered
 
 			});
@@ -212,7 +216,6 @@ function initFilter(paramsObj) {
 											'data-from-value': 'true',
 											'placeholder': currentFilter.form_placeholder[0]
 										}),
-									// 'callback': strSearchHandler,
 									'dataToBeFiltered': filtered
 
 			});
@@ -239,20 +242,16 @@ function initFilter(paramsObj) {
 				});
 				tmpElements.push({
 					'element': tmpEl,
-					// 'callback': selectSearchHandler,
 					'dataToBeFiltered': filtered
 				});
 			}
 			
 			tmpElements.forEach(function(item) {
 				filterable_content.prepend(item.element);
-				inputs.push(item.element);
-				// console.log(inputs);
 				
 				document.getElementById(item.element.id).addEventListener('input', (function(foo) {
 					return function(e) {
-						// e.target.getAttribute('data-filter-id')
-						globalSearchHandler(e, foo.dataToBeFiltered, inputs);
+						globalSearchHandler(e, foo.dataToBeFiltered);
 					}
 				}) (item));
 			});
@@ -262,38 +261,6 @@ function initFilter(paramsObj) {
 
 initFilter({
 	'id': 'wap_filterable',
-	'filterable': [
-		{
-			'name': 'title',
-			'type': 'str',
-			'form_placeholder': 'Nadpis'
-		},
-		{
-			'name': 'price',
-			'type': 'num',
-			'form_placeholder': ['Cena od', 'Cena do']
-		},
-		{
-			'name': 'author',
-			'type': 'str',
-			'form_placeholder': 'Autor',
-		},
-		{
-			'name': 'quantity',
-			'type': 'num',
-			'form_placeholder': ['Počet od', 'Počet do']
-		},
-		{
-			'name': 'publisher',
-			'type': 'enumeration',
-			'form_placeholder': 'Vydavateľstvo'
-		},
-	]
-});
-
-
-initFilter({
-	'id': 'wap_filterable2',
 	'filterable': [
 		{
 			'name': 'title',

@@ -8,29 +8,29 @@ h3 {
 	margin-bottom: 2em;
 }
 
-.items {
+/*.items {
 	clear: both;
-}
+}*/
 
 .item {
 	background: #FFF;
 	width: 20%;
-	float: left;
+	/*float: left;*/
 	box-shadow: 0 0 20px #aaa;
 	margin: 1em;
 	padding: 2em;
 	height: 200px;
+	display: inline-block;
 }
 
 .price_par {
 	width: 50%;
-	/*margin: 1em auto;*/
 	margin-top: 1em;
 	margin-left: auto;
 	margin-right: auto;
 	padding: 1em 0;
 	text-align: center;
-	/*background: #006090;*/
-	/*color: #fff;*/
 	font-size: 1.8em;
 }
+
+
