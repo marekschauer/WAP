@@ -270,34 +270,3 @@ function initFilter(paramsObj) {
 		}
 	}
 }
-
-initFilter({
-	'id': 'wap_filterable',
-	'filterable': [
-		{
-			'name': 'title',
-			'type': 'str',
-			'form_placeholder': 'Nadpis'
-		},
-		{
-			'name': 'price',
-			'type': 'num',
-			'form_placeholder': ['Cena od', 'Cena do']
-		},
-		{
-			'name': 'author',
-			'type': 'str',
-			'form_placeholder': 'Autor',
-		},
-		{
-			'name': 'quantity',
-			'type': 'num',
-			'form_placeholder': ['Počet od', 'Počet do']
-		},
-		{
-			'name': 'publisher',
-			'type': 'enumeration',
-			'form_placeholder': 'Vydavateľstvo'
-		},
-	]
-});

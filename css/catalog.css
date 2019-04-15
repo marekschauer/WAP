@@ -1,3 +1,7 @@
+/**
+ * CSS of website
+ */
+
 body {
 	background: #efefef;
 	font-family: Verdana;
@@ -8,14 +12,9 @@ h3 {
 	margin-bottom: 2em;
 }
 
-/*.items {
-	clear: both;
-}*/
-
 .item {
 	background: #FFF;
 	width: 20%;
-	/*float: left;*/
 	box-shadow: 0 0 20px #aaa;
 	margin: 1em;
 	padding: 2em;
